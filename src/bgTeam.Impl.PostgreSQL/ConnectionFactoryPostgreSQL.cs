@@ -3,6 +3,7 @@
     using System;
     using System.Data;
     using System.Threading.Tasks;
+    using bgTeam.Helpers;
     using Npgsql;
 
     public class ConnectionFactoryPostgreSQL : IConnectionFactory
@@ -43,7 +44,13 @@
 
         public IDbConnection Create(string connectionString)
         {
-            _logger.Debug($"ConnectionFactoryPostgreSQL: {connectionString}");
+            string formatedConnectionString = connectionString;
+            if (_setting.HidePassword)
+            {
+                formatedConnectionString = HideHelper.HidePostgrePassword(connectionString);
+            }
+
+            _logger.Debug($"ConnectionFactoryPostgreSQL: {formatedConnectionString}");
 
             NpgsqlConnection dbConnection = new NpgsqlConnection(connectionString);
             dbConnection.Open();
@@ -60,7 +67,13 @@
 
         public async Task<IDbConnection> CreateAsync(string connectionString)
         {
-            _logger.Debug($"ConnectionFactoryPostgreSQL: {connectionString}");
+                        string formatedConnectionString = connectionString;
+            if (_setting.HidePassword)
+            {
+                formatedConnectionString = HideHelper.HidePostgrePassword(connectionString);
+            }
+
+            _logger.Debug($"ConnectionFactoryPostgreSQL: {formatedConnectionString}");
 
             NpgsqlConnection dbConnection = new NpgsqlConnection(connectionString);
             await dbConnection.OpenAsync().ConfigureAwait(false);

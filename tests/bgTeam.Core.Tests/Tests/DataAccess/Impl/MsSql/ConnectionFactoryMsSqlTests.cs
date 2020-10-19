@@ -8,7 +8,7 @@ using Xunit;
 
 namespace bgTeam.Core.Tests.Tests.DataAccess.Impl.MsSql
 {
-    public class ConnectionFactoryOracleTests
+    public class ConnectionFactoryMsSqlTests
     {
         [Fact]
         public void DependencyAppLogger()
@@ -56,6 +56,35 @@ namespace bgTeam.Core.Tests.Tests.DataAccess.Impl.MsSql
             var (appLogger, connectionSetting) = GetMocks();
             var connectionFactoryMsSql = new ConnectionFactoryMsSql(appLogger.Object, "Server=myServerName,myPortNumber;Database=myDataBase;UID=myUsername;PWD=myPassword");
             await Assert.ThrowsAsync<SqlException>(() => connectionFactoryMsSql.CreateAsync());
+        }
+
+
+        [Fact]
+        public void HidePassword()
+        {
+            var logger = new Mock<IAppLogger>();
+            var factory = new ConnectionFactoryMsSql(logger.Object,
+                "Server=myServerName,myPortNumber;Database=myDataBase;UID=myUsername;PWD=myPassword");
+            Assert.Throws<SqlException>(() => factory.Create());
+
+            logger.Verify(l => l.Debug(
+                It.Is<string>(m => m.Contains("ConnectionFactoryMsSql: Server=myServerName,myPortNumber;Database=myDataBase;UID=myUsername;PWD=**********"))), Times.Once);
+            logger.Verify(l => l.Debug(
+               It.Is<string>(m => m.Contains("myPassword"))), Times.Never);
+        }
+
+        [Fact]
+        public async Task HidePasswordAsync()
+        {
+            var logger = new Mock<IAppLogger>();
+            var factory = new ConnectionFactoryMsSql(logger.Object,
+                "Server=myServerName,myPortNumber;Database=myDataBase;UID=myUsername;PWD=myPassword");
+            await Assert.ThrowsAsync<SqlException>(() => factory.CreateAsync());
+
+            logger.Verify(l => l.Debug(
+                It.Is<string>(m => m.Contains("ConnectionFactoryMsSql: Server=myServerName,myPortNumber;Database=myDataBase;UID=myUsername;PWD=**********"))), Times.Once);
+            logger.Verify(l => l.Debug(
+               It.Is<string>(m => m.Contains("myPassword"))), Times.Never);
         }
 
         private (

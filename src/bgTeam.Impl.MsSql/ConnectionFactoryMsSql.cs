@@ -1,5 +1,6 @@
 ﻿namespace bgTeam.DataAccess.Impl.MsSql
 {
+    using bgTeam.Helpers;
     using System;
     using System.Data;
     using System.Data.SqlClient;
@@ -43,7 +44,12 @@
 
         public IDbConnection Create(string connectionString)
         {
-            _logger.Debug($"ConnectionFactoryMsSql: {connectionString}");
+            string formatedConnectionString = connectionString;
+            if (_setting.HidePassword)
+            {
+                formatedConnectionString = HideHelper.HideMsSqlPassword(connectionString);
+            }
+            _logger.Debug($"ConnectionFactoryMsSql: {formatedConnectionString}");
 
             SqlConnection dbConnection = new SqlConnection(connectionString);
             dbConnection.Open();
@@ -60,7 +66,12 @@
 
         public async Task<IDbConnection> CreateAsync(string connectionString)
         {
-            _logger.Debug($"ConnectionFactoryMsSql: {connectionString}");
+            string formatedConnectionString = connectionString;
+            if (_setting.HidePassword)
+            {
+                formatedConnectionString = HideHelper.HideMsSqlPassword(connectionString);
+            }
+            _logger.Debug($"ConnectionFactoryMsSql: {formatedConnectionString}");
 
             SqlConnection dbConnection = new SqlConnection(connectionString);
             await dbConnection.OpenAsync().ConfigureAwait(false);

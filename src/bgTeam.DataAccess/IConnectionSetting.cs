@@ -6,5 +6,7 @@
     public interface IConnectionSetting
     {
         string ConnectionString { get; set; }
+
+        bool HidePassword { get; set; }
     }
 }

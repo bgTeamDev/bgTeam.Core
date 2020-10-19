@@ -8,8 +8,11 @@
         public ConnectionSettingDefault(string connectionString)
         {
             ConnectionString = connectionString;
+            HidePassword = true;
         }
 
         public string ConnectionString { get; set; }
+
+        public bool HidePassword { get; set; }
     }
 }

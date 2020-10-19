@@ -3,6 +3,7 @@ using bgTeam.DataAccess.Impl.MsSql;
 using bgTeam.DataAccess.Impl.PostgreSQL;
 using Moq;
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -58,6 +59,34 @@ namespace bgTeam.Core.Tests.Tests.DataAccess.Impl.PostgreSQL
             var (appLogger, connectionSetting) = GetMocks();
             var connectionFactoryMsSql = new ConnectionFactoryPostgreSQL(appLogger.Object, "User ID=root;Password=myPassword;Host=somehost;Port=5432;Database=myDataBase;");
             await Assert.ThrowsAsync<SocketException>(() => connectionFactoryMsSql.CreateAsync());
+        }
+
+        [Fact]
+        public void HidePassword()
+        {
+            var logger = new Mock<IAppLogger>();
+            var factory = new ConnectionFactoryPostgreSQL(logger.Object,
+                "User ID=root;Password=myPassword;Host=somehost;Port=5432;Database=myDataBase;");
+            Assert.Throws<SocketException>(() => factory.Create());
+
+            logger.Verify(l => l.Debug(
+                It.Is<string>(m => m.Contains("ConnectionFactoryPostgreSQL: User ID=root;Password=**********;Host=somehost;Port=5432;Database=myDataBase;"))), Times.Once);
+            logger.Verify(l => l.Debug(
+               It.Is<string>(m => m.Contains("myPassword"))), Times.Never);
+        }
+
+        [Fact]
+        public async Task HidePasswordAsync()
+        {
+            var logger = new Mock<IAppLogger>();
+            var factory = new ConnectionFactoryPostgreSQL(logger.Object,
+                "User ID=root;Password=myPassword;Host=somehost;Port=5432;Database=myDataBase;");
+            await Assert.ThrowsAsync<SocketException>(() => factory.CreateAsync());
+
+            logger.Verify(l => l.Debug(
+                It.Is<string>(m => m.Contains("ConnectionFactoryPostgreSQL: User ID=root;Password=**********;Host=somehost;Port=5432;Database=myDataBase;"))), Times.Once);
+            logger.Verify(l => l.Debug(
+               It.Is<string>(m => m.Contains("myPassword"))), Times.Never);
         }
 
         private (
