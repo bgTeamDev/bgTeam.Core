@@ -6,7 +6,7 @@ namespace bgTeam.Core.Tests.Infrastructure
     public class TestEntity
     {
         [Identity]
-        [PrymaryKey]
+        [PrimaryKey]
         public int? Id { get; set; }
 
         public string Name { get; set; }

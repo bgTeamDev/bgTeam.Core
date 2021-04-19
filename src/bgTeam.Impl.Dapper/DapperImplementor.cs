@@ -132,9 +132,8 @@
                 }
 
                 long identityValue = result.First();
-                int identityInt = Convert.ToInt32(identityValue);
-                keyValues.Add(identityColumn.Name, identityInt);
-                identityColumn.PropertyInfo.SetValue(entity, identityInt, null);
+                keyValues.Add(identityColumn.Name, identityValue);
+                identityColumn.PropertyInfo.SetValue(entity, identityValue, null);
             }
             else if (triggerIdentityColumn != null)
             {
