@@ -290,7 +290,7 @@
                     ("bgTeam.DataAccess", settings.BgTeamVersion),
                     ("bgTeam.StoryRunnerScheduler", settings.BgTeamVersion),
                     ("Microsoft.AspNetCore", "2.2.0"),
-                    ("Quartz", "3.1.0"),
+                    ("Quartz", "3.3.2"),
                 },
                 type: "Exe",
                 configs: true);

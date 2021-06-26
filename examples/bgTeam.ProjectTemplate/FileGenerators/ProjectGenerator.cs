@@ -1,10 +1,10 @@
 ﻿namespace bgTeam.ProjectTemplate
 {
-    using bgTeam.ProjectTemplate.FileGenerators;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using bgTeam.ProjectTemplate.FileGenerators;
 
     internal class ProjectGenerator
     {
@@ -29,12 +29,23 @@
 
         public string Output { get; private set; }
 
-        public void ProjectFile((string Name, string Version)[] nugets, string sdk = "Microsoft.NET.Sdk", string type = "Library", string[] projects = null, bool configs = false)
+        public void ProjectFile(
+            (string Name, string Version)[] nugets,
+            string sdk = "Microsoft.NET.Sdk",
+            string type = "Library",
+            string[] projects = null,
+            bool configs = false)
         {
             var result = new StringBuilder(File.ReadAllText("./Resourse/Templates/project.txt"));
 
             result.Replace("$sdk$", sdk);
             result.Replace("$type$", type);
+
+#if NETCOREAPP3_1
+            result.Replace("$framework$", "netcoreapp3.1");
+#else
+            result.Replace("$framework$", "net5.0");
+#endif
 
             var builder = new StringBuilder();
 
